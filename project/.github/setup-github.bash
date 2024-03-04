@@ -47,4 +47,7 @@ for installationId in $installationIds; do
   "user/installations/$installationId/repositories/$repositoryId"
 done
 
-# to test this script, run `mkdir testRepository && cd testRepository && git init & echo "test" > test.txt && git add . && git commit -m "initial commit" && bash ../.github/setup-github.bash <owner> <repo> <shortDescription>`
+# to test this script, run
+# mkdir -p testRepository && cd testRepository
+# git init && echo "test" > test.txt && git add . && git commit -m "initial commit" && bash ../project/.github/setup-github.bash 34j test-pypackage-template "testing pypackage template script" 
+# cd .. && rm -rf testRepository
