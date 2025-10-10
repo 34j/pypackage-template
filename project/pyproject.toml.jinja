@@ -1,17 +1,19 @@
 [build-system]
 build-backend = "setuptools.build_meta"
-requires = [ "setuptools" ]
+requires = [ "setuptools>=77.0.3" ]
 
 [project]
 name = "{{ project_slug }}"
 version = "0.0.0"
 description = "{{ project_short_description }}"
 readme = "README.md"
-license = { text = "{{ open_source_license }}" }
+{%- if open_source_license != "Not open source" %}
+license = "{{ open_source_license }}"
+{%- endif %}
 authors = [
   { name = "{{ full_name }}", email = "{{ email }}" },
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
   "Development Status :: 2 - Pre-Alpha",
   "Intended Audience :: Developers",
@@ -24,11 +26,11 @@ classifiers = [
   "Framework :: Django :: 5.1",
   "Framework :: Django :: 5.2",
   {%- endif  %}
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Software Development :: Libraries",
 ]
 
@@ -53,10 +55,12 @@ scripts.{{ cli_name }} = "{{ package_name }}.cli:app"
 
 [dependency-groups]
 dev = [
+  "coverage",
   "pytest>=8,<9",
-  "pytest-cov>=6,<7",
 {%- if is_django_package  %}
   "pytest-django>=4.5,<5",
+{%- else  %}
+  "pytest-cov>=6,<7",
 {%- endif %}
 ]
 {%- if documentation %}
@@ -105,21 +109,35 @@ lint.per-file-ignores."tests/**/*" = [
 ]
 lint.isort.known-first-party = [ "{{ package_name }}", "tests" ]
 
+[tool.pyproject-fmt]
+max_supported_python = "3.14"
+
 [tool.pytest.ini_options]
 addopts = """\
     -v
     -Wdefault
+{%- if is_django_package  %}
+    --ds=tests.settings
+{%- else  %}
     --cov={{ package_name }}
     --cov-report=term
     --cov-report=xml
-{%- if is_django_package  %}
-    --ds=tests.settings
 {%- endif  %}
     """
 pythonpath = [ "src" ]
 
 [tool.coverage.run]
 branch = true
+{%- if is_django_package  %}
+parallel = true
+source = [ "{{ package_name }}" ]
+{%- endif  %}
+
+[tool.coverage.paths]
+source = [
+  "src",
+  ".tox/**/site-packages",
+]
 
 [tool.coverage.report]
 exclude_lines = [
