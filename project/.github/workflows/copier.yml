@@ -22,8 +22,11 @@ jobs:
           python-version: "3.14"
       - uses: astral-sh/setup-uv@v7
       - name: Run copier update
+        # exclude src and tests as usually they contain user modifications that should not be overridden by copier updates
+        # use defaults to avoid asking for user input
         run: uvx copier@latest update --trust --vcs-ref main --exclude src --exclude tests --defaults || true
       - name: Accept both changes for all merge conflicts
+        # there is no single command to accept both changes for all merge conflicts
         run: |
           tmp_dir="$(mktemp -d)"
           trap 'rm -rf "$tmp_dir"' EXIT
