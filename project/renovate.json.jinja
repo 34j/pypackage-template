@@ -1,4 +1,21 @@
 {
-  "extends": ["github>browniebroke/renovate-configs:python"]{% if is_django_package %},
+  "extends": [
+    "config:best-practices",
+    ":automergeAll",
+    ":enablePreCommit"
+  ],
+  "packageRules": [
+    {
+      "matchDepTypes": ["dependencies"],
+      "rangeStrategy": "bump"
+    },
+    {
+      "matchPackageNames": ["python"],
+      "matchDepTypes": ["requires-python"],
+      "rangeStrategy": "widen",
+      "separateMultipleMinor": true,
+      "extractVersion": "^(?<version>\\d+\\.\\d+)"
+    }
+  ]{% if is_django_package %},
   "ignoreDeps": ["django"]{% endif %}
 }
