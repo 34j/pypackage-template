@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - .github/workflows/copier.yml
   schedule:
     - cron: "3 16 * * *"
 
