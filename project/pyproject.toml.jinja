@@ -66,6 +66,9 @@ dev = [
   "pytest-cov==7.*",
 {%- endif %}
   "sybil[pytest]",
+{%- if not is_django_package  %}
+  "ty",
+{%- endif %}
 ]
 {%- if documentation %}
 docs = [
@@ -133,6 +136,35 @@ lint.isort.known-first-party = [ "{{ package_name }}", "tests" ]
 
 [tool.pyproject-fmt]
 max_supported_python = "3.14"
+{%- if is_django_package  %}
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+mypy_path = "src/"
+no_implicit_optional = true
+show_error_codes = true
+warn_unreachable = true
+warn_unused_ignores = true
+exclude = [
+{%- if documentation %}
+  "docs/.*",
+{%- endif %}
+  "setup.py",
+]
+overrides = [
+  { module = "tests.*", allow_untyped_defs = true },
+{%- if documentation %}
+  { module = "docs.*", ignore_errors = true },
+{%- endif %}
+]
+{%- else  %}
+
+[tool.ty]
+terminal.error-on-warning = true
+{%-endif %}
 
 [tool.pytest]
 minversion = "9.0"
@@ -169,30 +201,8 @@ report.exclude_lines = [
   "raise NotImplementedError",
 ]
 
-[tool.mypy]
-check_untyped_defs = true
-disallow_any_generics = true
-disallow_incomplete_defs = true
-disallow_untyped_defs = true
-mypy_path = "src/"
-no_implicit_optional = true
-show_error_codes = true
-warn_unreachable = true
-warn_unused_ignores = true
-exclude = [
-{%- if documentation %}
-  "docs/.*",
-{%- endif %}
-  "setup.py",
-]
-overrides = [
-  { module = "tests.*", allow_untyped_defs = true },
-{%- if documentation %}
-  { module = "docs.*", ignore_errors = true },
-{%- endif %}
-]
-
 [tool.semantic_release]
+allow_zero_version = true
 version_toml = [ "pyproject.toml:project.version" ]
 version_variables = [
   "src/{{ package_name }}/__init__.py:__version__",
